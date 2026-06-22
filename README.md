@@ -1,2 +1,2 @@
 # feminism-cinema
-Team project for 85445 - INFORMATION MODELING AND WEB TECHNOLOGIES course at @unibo
+Team project for Knowledge Representation and Extraction course course at @unibo
