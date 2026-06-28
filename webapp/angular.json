@@ -72,6 +72,13 @@
               ],
               "outputHashing": "all"
             },
+            "pages": {
+              "baseHref": "/feminism-cinema/",
+              "outputPath": {
+                "base": "../docs",
+                "browser": ""
+              }
+            },
             "development": {
               "optimization": false,
               "extractLicenses": false,
