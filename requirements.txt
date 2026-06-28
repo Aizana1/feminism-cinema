@@ -1,0 +1,13 @@
+# Scraping
+selenium>=4.6
+beautifulsoup4
+requests
+
+# Gender enrichment
+gender-guesser
+
+# Speech analysis
+pandas
+numpy
+scikit-learn
+simplemma

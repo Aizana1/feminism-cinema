@@ -1,0 +1,15 @@
+# Python bytecode cache
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# OS / editor cruft
+.DS_Store
+.vscode/
+
+# Generated gender lookup cache (re-created on run)
+data/raw/gender_cache.json
