@@ -1,0 +1,89 @@
+================================================================================
+DATA SOURCES
+================================================================================
+Awards data
+Source: https://www.oscars.org/oscars/ceremonies/<year>
+The official Academy "ceremonies" pages, one static URL per ceremony year
+(1929–2026). Each page lists every category with its winner and nominees.
+
+Speeches
+speech.csv — acceptance-speech transcripts per winner, with columns:
+Year, Category, Film Title, Winner, Presenter, Date & Venue, Speech.
+
+================================================================================
+SCRAPING (scripts/awards_scraper.py)
+================================================================================
+- The oscars.org pages block plain HTTP requests (HTTP 403), so the pages are
+  fetched with a real browser via Selenium (headless Chrome). The year is part
+  of the URL, so the scraper simply loops over the years.
+- Each page is parsed in memory with BeautifulSoup (the "View by Category"
+  section). For every nomination we extract: ceremony year, category, name(s),
+  film, and a winner/nominee flag (read from the field's CSS class).
+- Output: data/raw/awards.csv with columns year, category, name, film, winner.
+  Rows are written incrementally (one flush per year) so progress can be
+  checked while the scrape runs.
+
+Note on "year": this is the CEREMONY year (when the show was held). E.g. the
+2025 ceremony honoured films released in 2024.
+
+================================================================================
+GENDER ATTRIBUTION (scripts/add_gender.py)
+================================================================================
+Gender is assigned per person with a hybrid, source-tagged method. Every value
+is accompanied by a gender_source column recording HOW it was decided:
+
+  category   — Acting categories are gendered by definition
+               (Actor -> male, Actress -> female). Most reliable.
+  wikidata   — For other people, the name is looked up on Wikidata and the
+               property P21 ("sex or gender") is read. Wikidata also tells us
+               whether the entity is a human (instance of Q5); studios and
+               organisations are therefore recognised as non-persons.
+  name-guess — Fallback when Wikidata has no match: an offline first-name
+               guesser (gender-guesser). Least reliable.
+  (empty)    — Non-persons (studios, countries) or undetermined.
+
+Name handling: the "name" field is messy in older years. Before lookup we
+split multiple people, drop credit labels ("Music by", "Art Direction:",
+"<role> by <name>"), parentheses, trailing roles ("Producers") and name
+suffixes ("Jr."), and skip organisation names (production company, pictures,
+studios, etc.). Rows with several people are expanded to one row per person.
+
+Looked-up names are cached (data/raw/gender_cache.json) to avoid repeat
+queries; the cache is regenerated automatically and is not committed.
+
+================================================================================
+SPEECH ANALYSIS (scripts/analyze_speeches.py)
+================================================================================
+Linking speeches to gender
+Rather than join two tables with different year formats, the same gender
+logic (Section 4) is applied directly to the "Winner" column of speech.csv.
+Output: data/speeches_with_gender.csv (every speech + gender + is_woman).
+
+Text cleaning
+- Remove the leading speaker label ("VIVIEN LEIGH:").
+- Normalise punctuation/whitespace; drop empty speeches.
+
+Lemmatisation
+Speeches are lemmatised with simplemma so word forms are counted together
+(women=woman, fought=fight, girls=girl, children=child). A small override
+table corrects known simplemma errors (e.g. crew). Analysis uses single
+words (unigrams).
+
+Stopwords / proper-noun removal
+Removed before analysis: English stopwords; conversational fillers
+(just, like, say, ...); contraction fragments; and PROPER NOUNS. Proper
+nouns are detected without external NLP models by (a) collecting names from
+the Winner and Presenter columns and (b) flagging words that appear
+capitalised mid-sentence and rarely lowercased (catches people, brands such
+as HBO, and title words such as the "La" in La La Land).
+
+Distinctive-word comparison: Fightin' Words
+The two groups (women vs men) are compared with the weighted log-odds-ratio
+with an informative Dirichlet prior (Monroe, Colaresi & Quinn 2008). For
+each word a z-score is computed: positive = more characteristic of women,
+negative = more characteristic of men; |z| > 1.96 ≈ significant at p < 0.05.
+The Dirichlet prior shrinks rare words, keeping the ranking stable on a
+relatively small corpus. For each term we also report the number and share
+of speeches in each group that contain it (n_women/pct_women,
+n_men/pct_men), which is more interpretable than the raw z-score.
+Output: data/fighting_words_women_vs_men.csv.
