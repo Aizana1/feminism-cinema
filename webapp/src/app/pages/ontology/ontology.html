@@ -1,0 +1,82 @@
+<div class="page">
+  <div class="page-head">
+    <p class="eyebrow">Knowledge graph</p>
+    <h1>The model behind the numbers</h1>
+    <p>
+      Before any chart, the raw CSVs are read as a small ontology — the kind you would build
+      in Protégé. Everything turns on one central class, the <strong>Nomination</strong>,
+      which ties a person, a film, a category and a ceremony together, and from which gender
+      and speech analysis flow.
+    </p>
+  </div>
+
+  <div class="grid">
+    <app-chart-card
+      title="Ontology graph"
+      subtitle="Classes (nodes) connected by object properties (arrows). Drag a node to explore."
+      insight="Colour groups the classes: the core event, the agents involved, the surrounding context, and the discourse layer where the speech analysis lives."
+    >
+      <app-echart [options]="graphOptions" height="520px" />
+    </app-chart-card>
+
+    <div class="grid cols-2" style="margin-top: 0">
+      <section class="panel">
+        <h3>Classes</h3>
+        <ul class="class-list">
+          @for (c of classes; track c.name) {
+            <li>
+              <div class="row">
+                <span class="cls">{{ c.name }}</span>
+                <span class="props">{{ c.props.join(' · ') }}</span>
+              </div>
+              <p>{{ c.desc }}</p>
+            </li>
+          }
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h3>Object properties</h3>
+        <table class="props-table">
+          <thead>
+            <tr><th>property</th><th>domain</th><th>range</th></tr>
+          </thead>
+          <tbody>
+            @for (p of properties; track p.name) {
+              <tr>
+                <td class="prop">{{ p.name }}</td>
+                <td>{{ p.domain }}</td>
+                <td>{{ p.range }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+    <div class="grid cols-2" style="margin-top: 0">
+      <section class="panel">
+        <h3>From CSV column to class</h3>
+        <table class="props-table">
+          <thead>
+            <tr><th>column</th><th>file</th><th>maps to</th></tr>
+          </thead>
+          <tbody>
+            @for (m of mappings; track m.column) {
+              <tr>
+                <td class="prop">{{ m.column }}</td>
+                <td class="file">{{ m.source }}</td>
+                <td>{{ m.target }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </section>
+
+      <section class="panel">
+        <h3>Example triples (Turtle-style)</h3>
+        <pre class="triples"><code>{{ triplesText }}</code></pre>
+      </section>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,49 @@
+<div class="page">
+  <div class="page-head">
+    <p class="eyebrow">Acceptance speeches</p>
+    <h1>What they say at the podium</h1>
+    <p>
+      Every transcribed acceptance speech was lemmatised and run through a
+      <em>“fighting words”</em> analysis (weighted log-odds with an informative Dirichlet
+      prior) to find the terms that most distinguish how women and men speak when they win.
+    </p>
+  </div>
+
+  @if (!loaded()) {
+    <div class="loading"><span class="spinner"></span> Loading…</div>
+  } @else {
+    <div class="grid cols-4">
+      @for (k of kpis(); track k.label) {
+        <app-stat-card [value]="k.value" [label]="k.label" [hint]="k.hint ?? ''" />
+      }
+    </div>
+
+    <div class="grid" style="margin-top: 1.4rem">
+      <app-chart-card
+        title="The most distinctive words"
+        subtitle="Rose = leans toward women · blue = leans toward men (by z-score)"
+        insight="Women's speeches lean on “woman”, “girl”, “fight” and “importantly”; men's lean on production and craft vocabulary. The further from zero, the stronger the gender signal."
+      >
+        <app-echart [options]="fightingOptions()" height="560px" />
+      </app-chart-card>
+
+      <div class="grid cols-2" style="margin-top: 0">
+        <app-chart-card
+          title="Usage, side by side"
+          subtitle="% of women vs. % of men using each distinctive term"
+          insight="Points above the dashed line are used proportionally more by women; bubble size reflects how many speeches contained the term."
+        >
+          <app-echart [options]="scatterOptions()" height="420px" />
+        </app-chart-card>
+
+        <app-chart-card
+          title="Who got to speak"
+          subtitle="Transcribed acceptance speeches by decade"
+          insight="The speech archive itself is skewed: far more transcribed speeches come from men, a reflection of the nomination gap upstream."
+        >
+          <app-echart [options]="speechTrendOptions()" height="420px" />
+        </app-chart-card>
+      </div>
+    </div>
+  }
+</div>

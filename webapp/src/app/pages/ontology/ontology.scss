@@ -1,0 +1,94 @@
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 1.5rem 1.6rem;
+  height: 100%;
+}
+.panel h3 {
+  margin: 0 0 1rem;
+  font-size: 1.2rem;
+}
+
+.class-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.class-list li {
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.class-list li:last-child {
+  border-bottom: 0;
+}
+.class-list .row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+}
+.class-list .cls {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--rose);
+}
+.class-list .props {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  font-family: ui-monospace, monospace;
+}
+.class-list p {
+  margin: 0.25rem 0 0;
+  font-size: 0.88rem;
+  color: var(--text-dim);
+}
+
+.props-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+.props-table th {
+  text-align: left;
+  color: var(--text-dim);
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+}
+.props-table td {
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+.props-table tr:last-child td {
+  border-bottom: 0;
+}
+.props-table .prop {
+  font-family: ui-monospace, monospace;
+  color: var(--gold);
+}
+.props-table .file {
+  font-family: ui-monospace, monospace;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+.triples {
+  margin: 0;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+  overflow-x: auto;
+}
+.triples code {
+  font-family: ui-monospace, 'SF Mono', monospace;
+  font-size: 0.82rem;
+  color: var(--text);
+  line-height: 1.7;
+  white-space: pre;
+}

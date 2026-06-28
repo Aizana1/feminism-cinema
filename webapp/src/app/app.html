@@ -1,0 +1,39 @@
+<nav class="topbar">
+  <a class="brand" routerLink="/" (click)="close()">
+    <span class="dot"></span>
+    <span class="brand-text">Feminism<span class="amp"> &amp; </span>Cinema</span>
+  </a>
+
+  <button class="burger" (click)="toggle()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+
+  <div class="links" [class.open]="menuOpen()">
+    @for (l of links; track l.path) {
+      <a
+        [routerLink]="l.path"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: l.exact }"
+        (click)="close()"
+        >{{ l.label }}</a
+      >
+    }
+  </div>
+</nav>
+
+<main>
+  <router-outlet />
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <div>
+      <strong>Feminism &amp; Cinema</strong> — Knowledge Representation &amp; Extraction,
+      University of Bologna.
+    </div>
+    <div class="muted">
+      Data: 97 years of Academy Award nominations &amp; acceptance speeches,
+      enriched with gender via Wikidata.
+    </div>
+  </div>
+</footer>

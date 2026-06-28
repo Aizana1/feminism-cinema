@@ -1,0 +1,43 @@
+<div class="page">
+  <div class="page-head">
+    <p class="eyebrow">Category by category</p>
+    <h1>The gendered map of the crafts</h1>
+    <p>
+      Acting is split in two by design, so here we set it aside and look at the craft and
+      technical categories. The picture is sharply divided: a few categories read as
+      “women's work”, while whole technical fields remain almost entirely male.
+    </p>
+  </div>
+
+  @if (!loaded()) {
+    <div class="loading"><span class="spinner"></span> Loading…</div>
+  } @else {
+    <div class="grid">
+      <app-chart-card
+        title="Gender composition of the busiest categories"
+        subtitle="Share of women vs. men among gendered nominees (acting excluded)"
+        insight="Costume Design and Makeup sit at the top; Sound, Cinematography, Visual Effects and Directing cluster at the bottom — the further down, the bluer the bar."
+      >
+        <app-echart [options]="compositionOptions()" height="520px" />
+      </app-chart-card>
+
+      <div class="grid cols-2" style="margin-top: 0">
+        <app-chart-card
+          title="Most female-coded categories"
+          subtitle="Highest % women (≥ 20 gendered nominees)"
+          insight="Costume and design work is where women have long been concentrated."
+        >
+          <app-echart [options]="mostFemaleOptions()" height="380px" />
+        </app-chart-card>
+
+        <app-chart-card
+          title="Where women are nearly absent"
+          subtitle="Lowest % women (≥ 20 gendered nominees)"
+          insight="The technical pipeline — sound, effects, cinematography — is where the glass ceiling is thickest."
+        >
+          <app-echart [options]="mostMaleOptions()" height="380px" />
+        </app-chart-card>
+      </div>
+    </div>
+  }
+</div>
