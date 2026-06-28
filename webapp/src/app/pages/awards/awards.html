@@ -1,0 +1,53 @@
+<div class="page">
+  <div class="page-head">
+    <p class="eyebrow">Awards over time</p>
+    <h1>Nine decades of nominations</h1>
+    <p>
+      The Academy keeps adding categories, so the sheer number of nominees grows every
+      decade. The question is whether women grew with it — both at the nomination stage and
+      on the winners' podium.
+    </p>
+  </div>
+
+  @if (!loaded()) {
+    <div class="loading"><span class="spinner"></span> Loading…</div>
+  } @else {
+    <div class="grid cols-2">
+      <div class="span-2">
+        <app-chart-card
+          title="Nomination volume by decade"
+          subtitle="Every nominee record, stacked by gender"
+          insight="The grey band is non-people: films, countries and studios nominated in categories like Best Picture or International Feature. Men (blue) still dominate every decade."
+        >
+          <app-echart [options]="volumeOptions()" height="400px" />
+        </app-chart-card>
+      </div>
+
+      <app-chart-card
+        title="Who actually wins?"
+        subtitle="Gender of all Oscar winners, 1929–2026"
+        insight="When the envelope opens, men collect the majority of the statuettes that go to a named person."
+      >
+        <app-echart [options]="winnerSplitOptions()" height="360px" />
+      </app-chart-card>
+
+      <app-chart-card
+        title="Nominees vs. winners"
+        subtitle="Women's share at each stage, by decade"
+        insight="The two lines track closely — being nominated and winning are roughly equally (un)likely for women once they're in the room."
+      >
+        <app-echart [options]="nomVsWinOptions()" height="360px" />
+      </app-chart-card>
+
+      <div class="span-2">
+        <app-chart-card
+          title="Women in the Directing category"
+          subtitle="Nominated vs. won, by decade"
+          insight="Directing is the starkest gap of all: a handful of nominations across the whole history, and wins you can count on one hand."
+        >
+          <app-echart [options]="directingOptions()" height="360px" />
+        </app-chart-card>
+      </div>
+    </div>
+  }
+</div>

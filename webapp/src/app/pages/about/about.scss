@@ -1,0 +1,97 @@
+.block-title {
+  margin: 2.6rem 0 1.2rem;
+  font-size: 1.5rem;
+}
+
+.pipeline {
+  display: grid;
+  gap: 1rem;
+}
+.step {
+  display: flex;
+  gap: 1.3rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.4rem 1.6rem;
+}
+.step .num {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--gold);
+  min-width: 2.2rem;
+}
+.step h3 {
+  margin: 0 0 0.4rem;
+  font-size: 1.2rem;
+}
+.step p {
+  margin: 0 0 0.7rem;
+  color: var(--text-dim);
+  max-width: 75ch;
+}
+.files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.files code,
+.dataset code {
+  font-family: ui-monospace, monospace;
+  font-size: 0.78rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.2rem 0.5rem;
+  color: var(--text-dim);
+}
+
+.dataset {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.4rem 1.5rem;
+}
+.dataset .rows {
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--rose), var(--gold));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.dataset code {
+  display: inline-block;
+  margin: 0.5rem 0;
+}
+.dataset p {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
+
+.notes {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: var(--text-dim);
+  max-width: 85ch;
+}
+.notes li {
+  margin-bottom: 0.7rem;
+}
+
+.tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.tech span {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.45rem 1rem;
+  font-size: 0.88rem;
+  color: var(--text);
+}

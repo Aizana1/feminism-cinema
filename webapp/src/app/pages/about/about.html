@@ -1,0 +1,66 @@
+<div class="page">
+  <div class="page-head">
+    <p class="eyebrow">About the project</p>
+    <h1>Method &amp; data</h1>
+    <p>
+      A team project for the <strong>Knowledge Representation &amp; Extraction</strong> course
+      at the University of Bologna. The extraction pipeline gathers and enriches the data;
+      this site is the representation layer that makes it legible.
+    </p>
+  </div>
+
+  <h2 class="block-title">The pipeline</h2>
+  <div class="pipeline">
+    @for (p of pipeline; track p.step) {
+      <article class="step">
+        <div class="num">{{ p.step }}</div>
+        <div class="content">
+          <h3>{{ p.title }}</h3>
+          <p>{{ p.body }}</p>
+          <div class="files">
+            @for (f of p.files; track f) {
+              <code>{{ f }}</code>
+            }
+          </div>
+        </div>
+      </article>
+    }
+  </div>
+
+  <h2 class="block-title">The datasets</h2>
+  <div class="grid cols-3">
+    @for (d of datasets; track d.file) {
+      <div class="dataset">
+        <div class="rows">{{ d.rows }}</div>
+        <code>{{ d.file }}</code>
+        <p>{{ d.desc }}</p>
+      </div>
+    }
+  </div>
+
+  <h2 class="block-title">Notes &amp; caveats</h2>
+  <ul class="notes">
+    <li>
+      Gender is recorded as it appears in Wikidata; the dataset includes a small number of
+      non-binary and transgender nominees, grouped pragmatically in the binary charts.
+    </li>
+    <li>
+      “Other / non-person” covers films, studios and countries nominated in collective
+      categories, plus names that could not be resolved.
+    </li>
+    <li>
+      Acting categories (Actor / Actress) are gender-segregated by the Academy's own rules,
+      so they are excluded from the craft-category comparisons.
+    </li>
+    <li>
+      The fighting-words analysis only sees transcribed speeches, which under-represent
+      women — itself a downstream effect of the nomination gap.
+    </li>
+  </ul>
+
+  <h2 class="block-title">Built with</h2>
+  <div class="tech">
+    <span>Angular</span><span>ECharts</span><span>PapaParse</span><span>Python · pandas</span
+    ><span>scikit-learn</span><span>Wikidata</span><span>Protégé / OWL</span>
+  </div>
+</div>

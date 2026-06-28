@@ -1,0 +1,48 @@
+<header class="hero">
+  <div class="hero-inner">
+    <p class="eyebrow">Knowledge Representation &amp; Extraction · University of Bologna</p>
+    <h1>Counting women<br />at the <span class="accent">Academy Awards</span></h1>
+    <p class="lede">
+      Ninety-seven years of Oscar nominations and acceptance speeches, turned into a small
+      knowledge graph and read through a feminist lens. Who gets nominated, who wins, who
+      speaks — and how the words differ.
+    </p>
+    <div class="cta">
+      <a routerLink="/awards" class="btn primary">Explore the data</a>
+      <a routerLink="/ontology" class="btn ghost">See the model</a>
+    </div>
+  </div>
+</header>
+
+<div class="page">
+  @if (!loaded()) {
+    <div class="loading"><span class="spinner"></span> Loading the dataset…</div>
+  } @else {
+    <div class="grid cols-4">
+      @for (k of kpis(); track k.label) {
+        <app-stat-card [value]="k.value" [label]="k.label" [hint]="k.hint" />
+      }
+    </div>
+
+    <div class="grid" style="margin-top: 1.4rem">
+      <app-chart-card
+        title="The share of women, decade by decade"
+        subtitle="Percentage of women among gendered nominees"
+        insight="Acting categories are split 50/50 by design (Actor / Actress). Strip them out — the gold line — and women's presence across the rest of the Oscars is far lower, though slowly rising."
+      >
+        <app-echart [options]="shareOptions()" height="380px" />
+      </app-chart-card>
+    </div>
+
+    <h2 class="section-title">Four ways into the data</h2>
+    <div class="grid cols-2 nav-cards">
+      @for (s of sections; track s.path) {
+        <a [routerLink]="s.path" class="nav-card">
+          <h3>{{ s.title }}</h3>
+          <p>{{ s.desc }}</p>
+          <span class="arrow">→</span>
+        </a>
+      }
+    </div>
+  }
+</div>
