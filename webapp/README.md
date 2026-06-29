@@ -31,6 +31,19 @@ If the upstream data changes, recopy them:
 cp ../data/*.csv public/data/
 ```
 
+## Ontology
+
+The `/ontology` page is driven by a real OWL ontology in Turtle —
+[`public/ontology/feminism-cinema.ttl`](public/ontology/feminism-cinema.ttl), a copy of the
+canonical file at the repo root (`ontology/feminism-cinema.ttl`). It opens in Protégé and is
+parsed live in the browser with [n3](https://github.com/rdfjs/N3.js), so the graph, the
+class / property tables and the example individuals always match the file. After editing the
+ontology, recopy it:
+
+```bash
+cp ../ontology/feminism-cinema.ttl public/ontology/
+```
+
 ## Develop
 
 ```bash

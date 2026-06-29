@@ -3,80 +3,101 @@
     <p class="eyebrow">Knowledge graph</p>
     <h1>The model behind the numbers</h1>
     <p>
-      Before any chart, the raw CSVs are read as a small ontology — the kind you would build
-      in Protégé. Everything turns on one central class, the <strong>Nomination</strong>,
-      which ties a person, a film, a category and a ceremony together, and from which gender
-      and speech analysis flow.
+      The data is described by a real OWL ontology, authored in the style taught with
+      Protégé. Everything on this page — the graph, the class and property tables, the
+      example individuals — is parsed live from
+      <a [href]="ontologyUrl" download>feminism-cinema.ttl</a> in the browser, so the page
+      and the ontology can never drift apart.
     </p>
   </div>
 
-  <div class="grid">
-    <app-chart-card
-      title="Ontology graph"
-      subtitle="Classes (nodes) connected by object properties (arrows). Drag a node to explore."
-      insight="Colour groups the classes: the core event, the agents involved, the surrounding context, and the discourse layer where the speech analysis lives."
-    >
-      <app-echart [options]="graphOptions" height="520px" />
-    </app-chart-card>
+  @if (!loaded()) {
+    <div class="loading"><span class="spinner"></span> Parsing the ontology…</div>
+  } @else {
+    <div class="grid">
+      <div class="onto-meta">
+        <div class="chips">
+          <span class="chip">{{ onto.counts.classes }} classes</span>
+          <span class="chip">{{ onto.counts.objectProperties }} object properties</span>
+          <span class="chip">{{ onto.counts.dataProperties }} data properties</span>
+          <span class="chip">{{ onto.counts.individuals }} individuals</span>
+        </div>
+        <a class="dl" [href]="ontologyUrl" download>↓ Download .ttl</a>
+      </div>
 
-    <div class="grid cols-2" style="margin-top: 0">
-      <section class="panel">
-        <h3>Classes</h3>
-        <ul class="class-list">
-          @for (c of classes; track c.name) {
-            <li>
-              <div class="row">
-                <span class="cls">{{ c.name }}</span>
-                <span class="props">{{ c.props.join(' · ') }}</span>
-              </div>
-              <p>{{ c.desc }}</p>
-            </li>
-          }
-        </ul>
-      </section>
+      <app-chart-card
+        title="Ontology graph"
+        subtitle="Classes (nodes) connected by object properties (arrows) and is-a links (dashed). Drag a node to explore."
+        insight="Colour groups the classes: the core event, the agents involved, the surrounding context, and the discourse layer where the speech analysis lives."
+      >
+        <app-echart [options]="graphOptions()" height="520px" />
+      </app-chart-card>
+
+      <div class="grid cols-2" style="margin-top: 0">
+        <section class="panel">
+          <h3>Classes</h3>
+          <ul class="class-list">
+            @for (c of onto.classes; track c.id) {
+              <li>
+                <div class="row"><span class="cls">{{ c.label }}</span></div>
+                <p>{{ c.comment }}</p>
+              </li>
+            }
+          </ul>
+        </section>
+
+        <section class="panel">
+          <h3>Object properties</h3>
+          <table class="props-table">
+            <thead>
+              <tr><th>property</th><th>domain</th><th>range</th></tr>
+            </thead>
+            <tbody>
+              @for (p of onto.objectProperties; track p.id) {
+                <tr>
+                  <td class="prop">{{ p.label }}@if (p.functional) {<span class="fn" title="functional"> ⚷</span>}</td>
+                  <td>{{ p.domain }}</td>
+                  <td>{{ p.range }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+
+          <h3 style="margin-top: 1.6rem">Data properties</h3>
+          <table class="props-table">
+            <thead>
+              <tr><th>property</th><th>domain</th><th>range</th></tr>
+            </thead>
+            <tbody>
+              @for (p of onto.dataProperties; track p.id) {
+                <tr>
+                  <td class="prop">{{ p.label }}</td>
+                  <td>{{ p.domain }}</td>
+                  <td>{{ p.range }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </section>
+      </div>
 
       <section class="panel">
-        <h3>Object properties</h3>
-        <table class="props-table">
-          <thead>
-            <tr><th>property</th><th>domain</th><th>range</th></tr>
-          </thead>
+        <h3>Example individuals (A-Box)</h3>
+        <p class="panel-sub">
+          Two real nominations asserted in the ontology, shown as subject · property · value.
+        </p>
+        <table class="props-table triples">
           <tbody>
-            @for (p of properties; track p.name) {
+            @for (t of onto.exampleTriples; track $index) {
               <tr>
-                <td class="prop">{{ p.name }}</td>
-                <td>{{ p.domain }}</td>
-                <td>{{ p.range }}</td>
+                <td class="subj">{{ t.s }}</td>
+                <td class="prop">{{ t.p }}</td>
+                <td [class.lit]="t.literal">{{ t.o }}</td>
               </tr>
             }
           </tbody>
         </table>
       </section>
     </div>
-
-    <div class="grid cols-2" style="margin-top: 0">
-      <section class="panel">
-        <h3>From CSV column to class</h3>
-        <table class="props-table">
-          <thead>
-            <tr><th>column</th><th>file</th><th>maps to</th></tr>
-          </thead>
-          <tbody>
-            @for (m of mappings; track m.column) {
-              <tr>
-                <td class="prop">{{ m.column }}</td>
-                <td class="file">{{ m.source }}</td>
-                <td>{{ m.target }}</td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </section>
-
-      <section class="panel">
-        <h3>Example triples (Turtle-style)</h3>
-        <pre class="triples"><code>{{ triplesText }}</code></pre>
-      </section>
-    </div>
-  </div>
+  }
 </div>

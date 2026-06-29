@@ -1,0 +1,236 @@
+@prefix :       <http://www.semanticweb.org/feminism-cinema/onto#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+<http://www.semanticweb.org/feminism-cinema/onto> a owl:Ontology ;
+    dcterms:title "Feminism & Cinema Ontology" ;
+    rdfs:comment """A small ontology modelling Academy Award nominations — the people
+and films involved, their gender, and the acceptance speeches together with the
+distinctive vocabulary surfaced by the fighting-words analysis. Built for the
+Knowledge Representation & Extraction course, University of Bologna.""" ;
+    owl:versionInfo "1.0" .
+
+#################################################################
+#    Classes
+#################################################################
+
+:Person a owl:Class ;
+    rdfs:label "Person" ;
+    rdfs:comment "A human nominee or presenter." .
+
+:Gender a owl:Class ;
+    rdfs:label "Gender" ;
+    rdfs:comment "A sex-or-gender value, resolved from Wikidata (property P21)." .
+
+:Film a owl:Class ;
+    rdfs:label "Film" ;
+    rdfs:comment "A motion picture put forward for an award." .
+
+:Nomination a owl:Class ;
+    rdfs:label "Nomination" ;
+    rdfs:comment "The central event: a candidacy of a person/film in a category at one ceremony." .
+
+:AwardCategory a owl:Class ;
+    rdfs:label "Award category" ;
+    rdfs:comment "An Academy Award category, e.g. Directing or Costume Design." .
+
+:ActingCategory a owl:Class ;
+    rdfs:subClassOf :AwardCategory ;
+    rdfs:label "Acting category" ;
+    rdfs:comment "A category whose gender is fixed by definition (Actor, Actress)." .
+
+:CraftCategory a owl:Class ;
+    rdfs:subClassOf :AwardCategory ;
+    rdfs:label "Craft category" ;
+    rdfs:comment "A craft or technical category, e.g. Sound, Cinematography, Directing." .
+
+:Edition a owl:Class ;
+    rdfs:label "Edition" ;
+    rdfs:comment "A single yearly Academy Awards ceremony." .
+
+:AcceptanceSpeech a owl:Class ;
+    rdfs:label "Acceptance speech" ;
+    rdfs:comment "The transcribed speech delivered by a winner." .
+
+:Term a owl:Class ;
+    rdfs:label "Term" ;
+    rdfs:comment "A distinctive word surfaced by the fighting-words analysis." .
+
+:Person owl:disjointWith :Film , :Nomination , :AcceptanceSpeech , :Term .
+:Film owl:disjointWith :Nomination , :AcceptanceSpeech .
+
+#################################################################
+#    Object properties
+#################################################################
+
+:hasNominee a owl:ObjectProperty ;
+    rdfs:label "has nominee" ;
+    rdfs:domain :Nomination ;
+    rdfs:range :Person ;
+    owl:inverseOf :isNomineeOf ;
+    rdfs:comment "Links a nomination to the person nominated." .
+
+:isNomineeOf a owl:ObjectProperty ;
+    rdfs:label "is nominee of" ;
+    rdfs:domain :Person ;
+    rdfs:range :Nomination .
+
+:forFilm a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "for film" ;
+    rdfs:domain :Nomination ;
+    rdfs:range :Film .
+
+:inCategory a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "in category" ;
+    rdfs:domain :Nomination ;
+    rdfs:range :AwardCategory .
+
+:atEdition a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "at edition" ;
+    rdfs:domain :Nomination ;
+    rdfs:range :Edition .
+
+:hasGender a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "has gender" ;
+    rdfs:domain :Person ;
+    rdfs:range :Gender .
+
+:resultsInSpeech a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "results in speech" ;
+    rdfs:domain :Nomination ;
+    rdfs:range :AcceptanceSpeech ;
+    rdfs:comment "A winning nomination may result in a transcribed acceptance speech." .
+
+:mentionsTerm a owl:ObjectProperty ;
+    rdfs:label "mentions term" ;
+    rdfs:domain :AcceptanceSpeech ;
+    rdfs:range :Term .
+
+#################################################################
+#    Data properties
+#################################################################
+
+:personName a owl:DatatypeProperty ;
+    rdfs:label "name" ; rdfs:domain :Person ; rdfs:range xsd:string .
+
+:genderSource a owl:DatatypeProperty ;
+    rdfs:label "gender source" ; rdfs:domain :Person ; rdfs:range xsd:string ;
+    rdfs:comment "How the gender was decided: category | wikidata | name-guess." .
+
+:filmTitle a owl:DatatypeProperty ;
+    rdfs:label "title" ; rdfs:domain :Film ; rdfs:range xsd:string .
+
+:categoryName a owl:DatatypeProperty ;
+    rdfs:label "category name" ; rdfs:domain :AwardCategory ; rdfs:range xsd:string .
+
+:ceremonyYear a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "ceremony year" ; rdfs:domain :Edition ; rdfs:range xsd:gYear .
+
+:isWinner a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "is winner" ; rdfs:domain :Nomination ; rdfs:range xsd:boolean .
+
+:speechText a owl:DatatypeProperty ;
+    rdfs:label "speech text" ; rdfs:domain :AcceptanceSpeech ; rdfs:range xsd:string .
+
+:wordCount a owl:DatatypeProperty ;
+    rdfs:label "word count" ; rdfs:domain :AcceptanceSpeech ; rdfs:range xsd:integer .
+
+:termLabel a owl:DatatypeProperty ;
+    rdfs:label "term" ; rdfs:domain :Term ; rdfs:range xsd:string .
+
+:zScore a owl:DatatypeProperty ;
+    rdfs:label "z-score" ; rdfs:domain :Term ; rdfs:range xsd:decimal ;
+    rdfs:comment "Weighted log-odds z-score; positive leans women, negative leans men." .
+
+:pctWomen a owl:DatatypeProperty ;
+    rdfs:label "percent women" ; rdfs:domain :Term ; rdfs:range xsd:decimal .
+
+:pctMen a owl:DatatypeProperty ;
+    rdfs:label "percent men" ; rdfs:domain :Term ; rdfs:range xsd:decimal .
+
+#################################################################
+#    Individuals — the controlled Gender values
+#################################################################
+
+:female a owl:NamedIndividual , :Gender ; rdfs:label "female" .
+:male a owl:NamedIndividual , :Gender ; rdfs:label "male" .
+:nonBinary a owl:NamedIndividual , :Gender ; rdfs:label "non-binary" .
+:transWoman a owl:NamedIndividual , :Gender ; rdfs:label "trans woman" .
+:transMan a owl:NamedIndividual , :Gender ; rdfs:label "trans man" .
+
+[] a owl:AllDifferent ;
+    owl:distinctMembers ( :female :male :nonBinary :transWoman :transMan ) .
+
+#################################################################
+#    Individuals — example A-Box (two real nominations)
+#################################################################
+
+# Example 1 — Jane Campion wins Directing at the 2022 ceremony (gender via Wikidata)
+:Edition_2022 a owl:NamedIndividual , :Edition ;
+    rdfs:label "94th Academy Awards (2022)" ;
+    :ceremonyYear "2022"^^xsd:gYear .
+
+:Directing a owl:NamedIndividual , :CraftCategory ;
+    rdfs:label "Directing" ;
+    :categoryName "Directing" .
+
+:JaneCampion a owl:NamedIndividual , :Person ;
+    rdfs:label "Jane Campion" ;
+    :personName "Jane Campion" ;
+    :hasGender :female ;
+    :genderSource "wikidata" .
+
+:ThePowerOfTheDog a owl:NamedIndividual , :Film ;
+    rdfs:label "The Power of the Dog" ;
+    :filmTitle "The Power of the Dog" .
+
+:term_woman a owl:NamedIndividual , :Term ;
+    rdfs:label "woman" ;
+    :termLabel "woman" ;
+    :zScore 6.583 ;
+    :pctWomen 12.3 ;
+    :pctMen 3.0 .
+
+:speech_campion a owl:NamedIndividual , :AcceptanceSpeech ;
+    rdfs:label "Jane Campion — 2022 acceptance speech" ;
+    :wordCount 210 ;
+    :mentionsTerm :term_woman .
+
+:nom_campion_2022 a owl:NamedIndividual , :Nomination ;
+    rdfs:label "Jane Campion / Directing / 2022" ;
+    :hasNominee :JaneCampion ;
+    :forFilm :ThePowerOfTheDog ;
+    :inCategory :Directing ;
+    :atEdition :Edition_2022 ;
+    :isWinner true ;
+    :resultsInSpeech :speech_campion .
+
+# Example 2 — Anthony Hopkins wins Actor at the 2021 ceremony (gender via category)
+:Edition_2021 a owl:NamedIndividual , :Edition ;
+    rdfs:label "93rd Academy Awards (2021)" ;
+    :ceremonyYear "2021"^^xsd:gYear .
+
+:Actor a owl:NamedIndividual , :ActingCategory ;
+    rdfs:label "Actor in a Leading Role" ;
+    :categoryName "Actor in a Leading Role" .
+
+:AnthonyHopkins a owl:NamedIndividual , :Person ;
+    rdfs:label "Anthony Hopkins" ;
+    :personName "Anthony Hopkins" ;
+    :hasGender :male ;
+    :genderSource "category" .
+
+:TheFather a owl:NamedIndividual , :Film ;
+    rdfs:label "The Father" ;
+    :filmTitle "The Father" .
+
+:nom_hopkins_2021 a owl:NamedIndividual , :Nomination ;
+    rdfs:label "Anthony Hopkins / Actor / 2021" ;
+    :hasNominee :AnthonyHopkins ;
+    :forFilm :TheFather ;
+    :inCategory :Actor ;
+    :atEdition :Edition_2021 ;
+    :isWinner true .

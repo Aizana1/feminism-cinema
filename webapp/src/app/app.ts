@@ -16,6 +16,7 @@ export class App {
     { path: '/categories', label: 'Categories', exact: false },
     { path: '/speeches', label: 'Speeches', exact: false },
     { path: '/ontology', label: 'Knowledge Graph', exact: false },
+    { path: '/methodology', label: 'Methodology', exact: false },
     { path: '/about', label: 'About', exact: false },
   ];
 

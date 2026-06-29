@@ -28,6 +28,12 @@ export const routes: Routes = [
     title: 'Knowledge graph · Feminism & Cinema',
   },
   {
+    path: 'methodology',
+    loadComponent: () =>
+      import('./pages/methodology/methodology').then((m) => m.MethodologyPage),
+    title: 'Methodology · Feminism & Cinema',
+  },
+  {
     path: 'about',
     loadComponent: () => import('./pages/about/about').then((m) => m.AboutPage),
     title: 'About · Feminism & Cinema',

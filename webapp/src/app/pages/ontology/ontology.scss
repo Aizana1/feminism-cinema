@@ -77,18 +77,55 @@
   color: var(--text-dim);
 }
 
-.triples {
-  margin: 0;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1rem 1.1rem;
-  overflow-x: auto;
+.props-table .fn {
+  color: var(--rose);
+  cursor: help;
 }
-.triples code {
-  font-family: ui-monospace, 'SF Mono', monospace;
+
+.onto-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.chip {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
   font-size: 0.82rem;
   color: var(--text);
-  line-height: 1.7;
-  white-space: pre;
+}
+.dl {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--gold);
+  white-space: nowrap;
+}
+
+.panel-sub {
+  margin: -0.4rem 0 0.9rem;
+  font-size: 0.88rem;
+  color: var(--text-dim);
+}
+
+.props-table.triples {
+  font-family: ui-monospace, 'SF Mono', monospace;
+  font-size: 0.82rem;
+}
+.props-table.triples .subj {
+  color: var(--rose);
+  white-space: nowrap;
+}
+.props-table.triples td.lit {
+  color: var(--text);
+}
+.props-table.triples td:not(.lit):not(.subj):not(.prop) {
+  color: var(--blue);
 }

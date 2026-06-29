@@ -1,0 +1,165 @@
+<div class="page">
+  <div class="page-head">
+    <p class="eyebrow">Methodology</p>
+    <h1>From oscars.org to a clean dataset</h1>
+    <p>
+      The full extraction pipeline behind the numbers: how the awards were scraped, how
+      gender was attributed person by person, and how the acceptance speeches were analysed.
+    </p>
+  </div>
+
+  <div class="method">
+    <aside class="toc">
+      <span class="toc-label">On this page</span>
+      <ul>
+        @for (s of toc; track s.id) {
+          <li><a [href]="'#' + s.id"><span class="n">{{ s.num }}</span> {{ s.title }}</a></li>
+        }
+      </ul>
+    </aside>
+
+    <div class="body">
+      <!-- 01 -->
+      <section id="sources" class="block">
+        <header><span class="num">01</span><h2>Data sources</h2></header>
+
+        <h3>Awards data</h3>
+        <p>
+          Source:
+          <a href="https://www.oscars.org/oscars/ceremonies" target="_blank" rel="noopener"
+            >oscars.org/oscars/ceremonies/&lt;year&gt;</a
+          >
+          — the official Academy “ceremonies” pages, one static URL per ceremony year
+          (1929–2026). Each page lists every category with its winner and nominees.
+        </p>
+
+        <h3>Speeches</h3>
+        <p>
+          <code>speech.csv</code> — acceptance-speech transcripts per winner, with columns:
+          <em>Year, Category, Film Title, Winner, Presenter, Date &amp; Venue, Speech</em>.
+        </p>
+      </section>
+
+      <!-- 02 -->
+      <section id="scraping" class="block">
+        <header><span class="num">02</span><h2>Scraping</h2></header>
+        <p class="file-ref"><code>scripts/awards_scraper.py</code></p>
+        <ul>
+          <li>
+            The oscars.org pages block plain HTTP requests (HTTP 403), so they are fetched
+            with a real browser via <strong>Selenium</strong> (headless Chrome). The year is
+            part of the URL, so the scraper simply loops over the years.
+          </li>
+          <li>
+            Each page is parsed in memory with <strong>BeautifulSoup</strong> (the
+            “View by Category” section). For every nomination we extract: ceremony year,
+            category, name(s), film, and a winner / nominee flag (read from the field's CSS
+            class).
+          </li>
+          <li>
+            Output: <code>data/raw/awards.csv</code> with columns
+            <em>year, category, name, film, winner</em>. Rows are written incrementally (one
+            flush per year) so progress can be checked while the scrape runs.
+          </li>
+        </ul>
+        <p class="note">
+          <strong>Note on “year”:</strong> this is the <em>ceremony</em> year (when the show
+          was held). E.g. the 2025 ceremony honoured films released in 2024.
+        </p>
+      </section>
+
+      <!-- 03 -->
+      <section id="gender" class="block">
+        <header><span class="num">03</span><h2>Gender attribution</h2></header>
+        <p class="file-ref"><code>scripts/add_gender.py</code></p>
+        <p>
+          Gender is assigned per person with a hybrid, source-tagged method. Every value is
+          accompanied by a <code>gender_source</code> column recording <em>how</em> it was
+          decided:
+        </p>
+
+        <table class="source-table">
+          <thead>
+            <tr><th>gender_source</th><th>How it is decided</th><th>Reliability</th></tr>
+          </thead>
+          <tbody>
+            @for (g of genderSources; track g.key) {
+              <tr>
+                <td class="key">{{ g.key }}</td>
+                <td>{{ g.rule }}</td>
+                <td class="rel">{{ g.reliability }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+
+        <h3>Name handling</h3>
+        <p>
+          The <code>name</code> field is messy in older years. Before lookup we split
+          multiple people, drop credit labels (“Music by”, “Art Direction:”,
+          “&lt;role&gt; by &lt;name&gt;”), parentheses, trailing roles (“Producers”) and name
+          suffixes (“Jr.”), and skip organisation names (production company, pictures,
+          studios, etc.). Rows with several people are expanded to one row per person.
+        </p>
+        <p class="note">
+          Looked-up names are cached (<code>data/raw/gender_cache.json</code>) to avoid
+          repeat queries; the cache is regenerated automatically and is not committed.
+        </p>
+      </section>
+
+      <!-- 04 -->
+      <section id="speech" class="block">
+        <header><span class="num">04</span><h2>Speech analysis</h2></header>
+        <p class="file-ref"><code>scripts/analyze_speeches.py</code></p>
+
+        <h3>Linking speeches to gender</h3>
+        <p>
+          Rather than join two tables with different year formats, the same gender logic
+          (Section 03) is applied directly to the <code>Winner</code> column of
+          <code>speech.csv</code>. Output: <code>data/speeches_with_gender.csv</code> (every
+          speech + gender + is_woman).
+        </p>
+
+        <h3>Text cleaning</h3>
+        <ul>
+          <li>Remove the leading speaker label (“VIVIEN LEIGH:”).</li>
+          <li>Normalise punctuation / whitespace; drop empty speeches.</li>
+        </ul>
+
+        <h3>Lemmatisation</h3>
+        <p>
+          Speeches are lemmatised with <strong>simplemma</strong> so word forms are counted
+          together (women = woman, fought = fight, girls = girl, children = child). A small
+          override table corrects known simplemma errors (e.g. <em>crew</em>). Analysis uses
+          single words (unigrams).
+        </p>
+
+        <h3>Stopwords &amp; proper-noun removal</h3>
+        <p>
+          Removed before analysis: English stopwords; conversational fillers (just, like,
+          say, …); contraction fragments; and <strong>proper nouns</strong>. Proper nouns are
+          detected without external NLP models by (a) collecting names from the
+          <code>Winner</code> and <code>Presenter</code> columns and (b) flagging words that
+          appear capitalised mid-sentence and rarely lowercased (catches people, brands such
+          as HBO, and title words such as the “La” in <em>La La Land</em>).
+        </p>
+
+        <h3>Distinctive-word comparison — “Fightin' Words”</h3>
+        <p>
+          The two groups (women vs men) are compared with the
+          <strong>weighted log-odds-ratio with an informative Dirichlet prior</strong>
+          (Monroe, Colaresi &amp; Quinn, 2008). For each word a <em>z</em>-score is computed:
+          positive = more characteristic of women, negative = more characteristic of men;
+          <code>|z| &gt; 1.96</code> ≈ significant at <em>p</em> &lt; 0.05. The Dirichlet
+          prior shrinks rare words, keeping the ranking stable on a relatively small corpus.
+        </p>
+        <p>
+          For each term we also report the number and share of speeches in each group that
+          contain it (<code>n_women / pct_women</code>, <code>n_men / pct_men</code>), which
+          is more interpretable than the raw z-score. Output:
+          <code>data/fighting_words_women_vs_men.csv</code>.
+        </p>
+      </section>
+    </div>
+  </div>
+</div>
